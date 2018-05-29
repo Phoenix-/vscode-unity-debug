@@ -2,9 +2,11 @@
 **
 **/.DS_Store
 **/.mdb
-!attach.js
 !package.json
 !bin/**
 !Changelog.txt
+!LICENSE.txt
 !README.md
-!Images/unity-logo128x128.png
+!Images/**
+!out/**
+!node_modules/**

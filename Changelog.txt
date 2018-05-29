@@ -6,6 +6,44 @@ Git: https://github.com/Unity-Technologies/vscode-unity-debug
 Changes
 -------
 
+2.5.0
+=====
+ - New support for halt on exception. In debug view a list of exceptions control which to break on.
+
+2.4.2
+=====
+ - Added support for Library/EditorInstance.json. The correct process is attached and multiple editors are running.
+
+2.4.1
+=====
+ - Fix modification exception when setting breakpoints.
+
+2.4.0
+=====
+ - Added support for attaching individual unity processes by use of commands.
+
+2.3.0
+=====
+ - Added support for conditional breakpoints.
+
+2.2.0
+=====
+ - Added support for setValue. This makes it possible to modify variables at runtime.
+
+2.1.0
+=====
+ - Added support for circumventing string truncation by disabling ellipsing on strings in watch field.
+
+2.0.1
+=====
+ - Fix duplicate key exception when assigning breakpoints.
+
+2.0.0
+=====
+ - Updated packages to support .NET 4.6 runtime in Unity.
+ - Fix issue with being able to detach from Unity, which would cause the Unity Editor to hang.
+ - Various instabilities fixes, such as LINQ debugging for .NET 4.6 runtime, hovering variables, complex class debugging etc.
+
 1.3.0
 =====
  - Fix "Error: command 'vscode.startDebug' not found" error when using "Unity Attach Debugger" command.

@@ -1,20 +1,50 @@
-﻿namespace MonoDevelop.Debugger.Soft.Unity
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+
+namespace MonoDevelop.Debugger.Soft.Unity
 {
 	public static class Platform
 	{
-		public static bool IsLinux
-		{
-			get { return VSCodeDebug.Utilities.IsLinux(); }
-		}
+		private const string OSASCRIPT = "/usr/bin/osascript";	// osascript is the AppleScript interpreter on OS X
+		private const string LINUX_TERM = "/usr/bin/gnome-terminal";	//private const string LINUX_TERM = "/usr/bin/x-terminal-emulator";
 
-		public static bool IsMac
-		{
-			get { return VSCodeDebug.Utilities.IsOSX(); }
-		}
-
+		/*
+		 * Is this Windows?
+		 */
 		public static bool IsWindows
 		{
-			get { return VSCodeDebug.Utilities.IsWindows(); }
+			get
+			{
+				var pid = Environment.OSVersion.Platform;
+				return !(pid == PlatformID.Unix || pid == PlatformID.MacOSX);
+			}
+		}
+
+		/*
+		 * Is this OS X?
+		 */
+		public static bool IsMac => File.Exists(OSASCRIPT);
+
+		/*
+		 * Is this Linux?
+		 */
+		public static bool IsLinux => File.Exists(LINUX_TERM);
+		
+		public static bool IsLocal(string address)
+		{
+			try
+			{
+				if (address == "127.0.0.1")
+					return true;
+				return Dns.GetHostAddresses(Dns.GetHostName()).Any(ip => ip.ToString() == address);
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 }

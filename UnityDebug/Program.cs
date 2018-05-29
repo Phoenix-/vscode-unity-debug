@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
-using VSCodeDebug;
 using System.Linq;
+using System.Reflection;
+using Mono.Debugging.Client;
 using MonoDevelop.Debugger.Soft.Unity;
 using System.Threading.Tasks;
+using MonoDevelop.Debugger.VsCodeDebugProtocol;
+using VSCodeDebug;
 
 namespace UnityDebug
 {
@@ -26,9 +29,9 @@ namespace UnityDebug
 				Log.Write (message);
 			}
 
-		};
+		}
 
-		class CustomLogger : Mono.Debugging.Client.ICustomLogger
+		class CustomLogger : ICustomLogger
 		{
 			public void LogAndShowException(string message, Exception ex)
 			{
@@ -37,12 +40,17 @@ namespace UnityDebug
 
 			public void LogError(string message, Exception ex)
 			{
-				Log.Write(message + (ex != null ? System.Environment.NewLine + ex.ToString() : string.Empty));
+				Log.Write(message + (ex != null ? Environment.NewLine + ex : string.Empty));
 			}
 
 			public void LogMessage(string messageFormat, params object[] args)
 			{
-				Log.Write(String.Format(messageFormat, args));
+				Log.Write(string.Format(messageFormat, args));
+			}
+
+			public string GetNewDebuggerLogFilename()
+			{
+				return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location) + "-log.txt");
 			}
 		}
 
@@ -68,21 +76,24 @@ namespace UnityDebug
 			}
 		}
 
-		private static void RunSession(Stream inputStream, Stream outputStream)
+		static void RunSession(Stream inputStream, Stream outputStream)
 		{
 			DebugSession debugSession = new UnityDebugSession();
-			Mono.Debugging.Client.DebuggerLoggingService.CustomLogger = new CustomLogger();
+			DebuggerLoggingService.CustomLogger = new CustomLogger();
 			debugSession.Start(inputStream, outputStream).Wait();
+		}
+
+		static void RunVSSession(Stream inputStream, Stream outputStream)
+		{
+			VSCodeDebuggerSession debugSession = new VSCodeDebuggerSession();
+			debugSession.Start(inputStream, outputStream);
 		}
 
 		public static async Task<string> GetUnityProcesses()
 		{
-			var options = UnityProcessDiscovery.GetProcessOptions.All;
+			var processes = await UnityProcessDiscovery.GetAttachableProcesses ();
 
-
-			var processes = await UnityProcessDiscovery.GetAttachableProcesses (options);
-
-			return string.Join("\n", processes.Select(x => x.Name));
+			return string.Join("\n", processes.Select(x => x.Name + $" ({x.Id})"));
 		}
 	}
 }

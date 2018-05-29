@@ -1,11 +1,20 @@
 {
   "name": "unity-debug",
   "displayName": "Debugger for Unity",
-  "version": "1.3.0",
+  "version": "2.5.0",
   "publisher": "Unity",
   "description": "Unity debugger extension",
+  "license": "MIT",
   "engines": {
-    "vscode": "^0.10.1"
+    "vscode": "^1.22.0"
+  },
+  "dependencies": {
+    "make": "^0.8.1",
+    "@types/node": "^10.0.8",
+    "npm": "^6.0.0",
+    "vscode": "^1.1.17",
+    "vscode-debugprotocol": "^1.29.0",
+    "vscode-nls": "^3.2.2"
   },
   "categories": [
     "Debuggers"
@@ -20,34 +29,76 @@
   "bugs": {
     "url": "https://github.com/Unity-Technologies/vscode-unity-debug/issues"
   },
-
   "repository": {
     "type": "git",
     "url": "https://github.com/Unity-Technologies/vscode-unity-debug.git"
   },
-
-  "icon" : "Images/unity-logo128x128.png",
-
-  "main": "./attach",
+  "icon": "Images/dark/Unity.png",
+  "main": "./out/attach.js",
+  "scripts": {
+    "prepare": "make build",
+    "vscode:prepublish": "make build",
+    "compile": "make build",
+    "watch": "tsc -w -p ./src/typescript",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
   "activationEvents": [
-        "onCommand:attach.attachToDebugger"
-    ],
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
+    "onDebug"
+  ],
   "contributes": {
-    "commands": [{
-            "command": "attach.attachToDebugger",
-            "title": "Unity Attach Debugger"
-        }],
+    "commands": [
+      {
+        "command": "attach.attachToDebugger",
+        "title": "Unity Attach Debugger"
+      },
+      {
+        "command": "exceptions.addEntry",
+        "title": "Add",
+        "icon": {
+          "dark": "Images/dark/stage.svg",
+          "light": "Images/light/stage.svg"
+        }
+      },
+      {
+        "command": "exceptions.always",
+        "title": "Always"
+      },
+      {
+        "command": "exceptions.never",
+        "title": "Never"
+      }
+    ],
+    "views": {
+      "debug": [
+        {
+          "id": "exceptions",
+          "name": "Exception Breakpoints"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "exceptions.addEntry",
+          "when": "view == exceptions",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "exceptions.always",
+          "when": "view == exceptions && viewItem == exception"
+        },
+        {
+          "command": "exceptions.never",
+          "when": "view == exceptions && viewItem == exception"
+        }
+      ]
+    },
     "debuggers": [
       {
         "type": "unity",
         "label": "Unity Debugger",
-        "configurationAttributes": {
-          "launch": {},
-          "attach": {}
-        },
         "enableBreakpointsFor": {
           "languageIds": [
             "csharp"
@@ -59,39 +110,7 @@
         },
         "linux": {
           "runtime": "mono"
-        },
-        "initialConfigurations": [
-          {
-            "name": "Unity Editor",
-            "type": "unity",
-            "request": "launch"
-          },
-          {
-            "name": "Windows Player",
-            "type": "unity",
-            "request": "launch"
-          },
-          {
-            "name": "OSX Player",
-            "type": "unity",
-            "request": "launch"
-          },
-          {
-            "name": "Linux Player",
-            "type": "unity",
-            "request": "launch"
-          },
-          {
-            "name": "iOS Player",
-            "type": "unity",
-            "request": "launch"
-          },
-          {
-            "name": "Android Player",
-            "type": "unity",
-            "request": "launch"
-          }
-        ]
+        }
       }
     ]
   }
