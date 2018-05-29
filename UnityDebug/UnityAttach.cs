@@ -32,9 +32,12 @@ namespace UnityDebug
 					options = UnityProcessDiscovery.GetProcessOptions.Players;
 			}
 
-			var processes = UnityProcessDiscovery.GetAttachableProcesses (options);
+			var processes = UnityProcessDiscovery.GetAttachableProcesses (options).Result;
 
-			processes.ForEach (p => Log.Write ("Found Unity process: " + p.Name + " (" + p.Id + ")"));
+			foreach(var p in processes)
+			{
+				Log.Write ("Found Unity process: " + p.Name + " (" + p.Id + ")");
+			}
 
 			return processes.Where (p => p.Name.Contains (processName));
 		}

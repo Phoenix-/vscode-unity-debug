@@ -3,6 +3,7 @@ using System.IO;
 using VSCodeDebug;
 using System.Linq;
 using MonoDevelop.Debugger.Soft.Unity;
+using System.Threading.Tasks;
 
 namespace UnityDebug
 {
@@ -49,7 +50,7 @@ namespace UnityDebug
 		{
 			if(argv.Length > 0 && argv[0] == "list")
 			{
-				Console.Write(GetUnityProcesses());
+				Console.Write(GetUnityProcesses().Result);
 				return;
 			}
 
@@ -74,12 +75,12 @@ namespace UnityDebug
 			debugSession.Start(inputStream, outputStream).Wait();
 		}
 
-		public static string GetUnityProcesses()
+		public static async Task<string> GetUnityProcesses()
 		{
 			var options = UnityProcessDiscovery.GetProcessOptions.All;
 
 
-			var processes = UnityProcessDiscovery.GetAttachableProcesses (options);
+			var processes = await UnityProcessDiscovery.GetAttachableProcesses (options);
 
 			return string.Join("\n", processes.Select(x => x.Name));
 		}

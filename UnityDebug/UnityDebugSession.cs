@@ -160,11 +160,13 @@ namespace UnityDebug
 
 			var process = processes [0];
 
+			SendOutput("stdout", "UnityDebug: Process ID" + process.Id);
+
 			var attachInfo = UnityProcessDiscovery.GetUnityAttachInfo (process.Id, ref unityDebugConnector);
 
 			Debugger.Connect (attachInfo.Address, attachInfo.Port);
 
-			SendOutput("stdout", "UnityDebug: Attached to Unity process '" + process.Name + "' (" + process.Id + ")\n");
+			SendOutput("stdout", "UnityDebug: Attached to Unity process '" + process.Name + "' (" + process.Id + "):" + attachInfo.Port +"\n");
 			SendResponse(response);
 		}
 
